@@ -39,7 +39,7 @@ dag = DAG(
 
 # Function to load data from MySQL table using Trino
 def load_data_table():
-    con = get_trino_connection('ali')
+    con = get_trino_connection('933598')
     query = "SELECT * FROM mysql.tmp.test"
     with closing(con.cursor()) as cur:
         cur.execute(query)
