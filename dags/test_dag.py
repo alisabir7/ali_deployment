@@ -7,7 +7,7 @@ from pyhive import trino
 
 # Define a function to get Trino connection
 def get_trino_connection(user):
-    host = 'stx-trino.svc'
+    host = 'stx-trino'
     port = 8080
 
     conn = trino.connect(
