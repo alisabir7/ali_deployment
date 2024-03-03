@@ -66,10 +66,10 @@ server:
       name: cache-volume
     resource: 
       limits:
-        cpu: '800m'
+        cpu: '1'
         memory: 1Gi
       requests:
-        cpu: '700m'
+        cpu: '1'
         memory: 1Gi
     #nodeSelector: 
     #  ng: node3
@@ -122,10 +122,10 @@ server:
       name: cache-volume    
     resource:      
       limits:
-        cpu: '800m'
+        cpu: '1'
         memory: 1Gi
       requests:
-        cpu: '700m'
+        cpu: '1'
         memory: 1Gi
     #nodeSelector: 
     #  ng: node3
