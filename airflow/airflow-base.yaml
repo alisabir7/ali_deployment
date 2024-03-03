@@ -664,11 +664,11 @@ workers:
 
   resources: 
     limits:
-     cpu: 300m
-     memory: 750Mi
+     cpu: '1'
+     memory: 1Gi
     requests:
-     cpu: 250m
-     memory: 600Mi
+     cpu: '1'
+     memory: 1Gi
 
   # Grace period for tasks to finish after SIGTERM is sent from kubernetes
   terminationGracePeriodSeconds: 600
@@ -892,13 +892,13 @@ scheduler:
       maxUnavailable: 1
       # minAvailable: 1
 
-  resources: 
+  resources:  
     limits:
-     cpu: 1250m
-     memory: 1500Mi
+     cpu: '1'
+     memory: 1Gi
     requests:
-     cpu: 1000m
-     memory: 1200Mi
+     cpu: '1'
+     memory: 1Gi
 
   # This setting tells kubernetes that its ok to evict
   # when it wants to scale a node down.
@@ -1284,11 +1284,11 @@ webserver:
 
   resources: 
      limits:
-       cpu: 1000m
-       memory: 1024Mi
+       cpu: '1'
+       memory: 1Gi
      requests:
-       cpu: 900m
-       memory: 800Mi
+       cpu: '1'
+       memory: 1Gi
 
   # Create initial user.
   defaultUser:
@@ -1472,12 +1472,12 @@ triggerer:
     # Annotations to add to triggerer volumes
     annotations: {}
 
-  resources:
+  resources: 
     limits:
-     cpu: 700m
-     memory: 1000Mi
+     cpu: '1'
+     memory: 1Gi
     requests:
-     cpu: 650m
+     cpu: '1'
      memory: 750Mi
 
   # Grace period for triggerer to finish after SIGTERM is sent from kubernetes
