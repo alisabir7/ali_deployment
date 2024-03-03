@@ -27,11 +27,11 @@ spec:
               name: mysql
           resources:
             limits:
-              cpu: 500m
-              memory: 250Mi
+              cpu: '1'
+              memory: 1000Mi
             requests:
-              cpu: 500m
-              memory: 250Mi
+              cpu: '1'
+              memory: 1000Mi
           volumeMounts:
             - name: mysql-persistent-storage
               mountPath: /var/lib/mysql
