@@ -1,0 +1,164 @@
+# Default values for trino.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: trinodb/trino
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart version.
+  tag: 439
+#imagePullSecrets: 
+#  - name: registry-credentials
+
+server:
+  propertiesPath: /etc/trino
+  node:
+    environment: production
+    dataDir: /data/trino
+    pluginDir: /usr/lib/trino/plugin
+  log:
+    trino:
+      level: INFO
+  
+  coordinator:
+    properties:
+      config.properties: |
+        coordinator=true
+        node-scheduler.include-coordinator=false
+        http-server.http.port=8080
+        query.max-memory=5000GB
+        discovery-server.enabled=true
+        discovery.uri=http://localhost:8080
+        protocol.v1.alternate-header-name=Presto
+        # CBO and Query Optimizer
+        optimizer.join-reordering-strategy=AUTOMATIC
+        join-distribution-type=AUTOMATIC
+        http-server.threads.max=500
+        http-server.log.path=/tmp/http-request.log
+        http-server.log.enabled=true
+      jvm.config: |
+        -server
+        -Xmx700m
+        -XX:+UseG1GC
+        -XX:G1HeapRegionSize=32M
+        -XX:+UseGCOverheadLimit
+        -XX:+ExplicitGCInvokesConcurrent
+        -XX:+HeapDumpOnOutOfMemoryError
+        -XX:+ExitOnOutOfMemoryError
+        -Djdk.attach.allowAttachSelf=true
+        #-XX:-UseBiasedLocking
+        -XX:ReservedCodeCacheSize=512M
+        -XX:PerMethodRecompilationCutoff=10000
+        -XX:PerBytecodeRecompilationCutoff=10000
+        -Djdk.nio.maxCachedBufferSize=2000000
+        -Xlog:gc*:file=/tmp/gc.log:time
+    volume:
+    - name: spill-volume
+      configMap:
+        name: stx-trino-coordinator
+    - name: cache-volume
+      configMap:
+        name: stx-trino-coordinator
+    volumeMount:
+    - mountPath: /mnt/spill
+      name: spill-volume
+    - mountPath: /mnt/cache
+      name: cache-volume
+    resource: 
+      limits:
+        cpu: '800m'
+        memory: 1Gi
+      requests:
+        cpu: '700m'
+        memory: 1Gi
+    #nodeSelector: 
+    #  ng: node3
+    tolerations: []
+    affinity: {}
+  worker:
+    count: 1
+    graceTimeoutSeconds: 60
+    properties: 
+      config.properties: |
+        coordinator=false
+        http-server.http.port=8080
+        query.max-memory=5000GB
+        query.max-memory-per-node=650MB
+        #query.max-total-memory-per-node=90GB
+        # memory.heap-headroom-per-node=25GB
+        discovery.uri=http://stx-trino:8080
+        # CBO and Query Optimizer
+        optimizer.join-reordering-strategy=AUTOMATIC
+        join-distribution-type=AUTOMATIC
+        http-server.threads.max=500
+        http-server.log.path=/tmp/http-request.log
+        http-server.log.enabled=true
+      jvm.config: |
+        -Xmx700m
+        -XX:+UseG1GC
+        -XX:G1HeapRegionSize=32M
+        -XX:+UseGCOverheadLimit
+        -XX:+ExplicitGCInvokesConcurrent
+        -XX:+HeapDumpOnOutOfMemoryError
+        -XX:+ExitOnOutOfMemoryError
+        -Djdk.attach.allowAttachSelf=true
+        #-XX:-UseBiasedLocking
+        -XX:ReservedCodeCacheSize=512M
+        -XX:PerMethodRecompilationCutoff=10000
+        -XX:PerBytecodeRecompilationCutoff=10000
+        -Djdk.nio.maxCachedBufferSize=2000000
+        -Xlog:gc*:file=/tmp/gc.log:time
+    volume: 
+    - name: spill-volume
+      configMap:
+        name: stx-trino-coordinator
+    - name: cache-volume
+      configMap:
+        name: stx-trino-coordinator
+    volumeMount:
+    - mountPath: /mnt/spill
+      name: spill-volume
+    - mountPath: /mnt/cache
+      name: cache-volume    
+    resource:      
+      limits:
+        cpu: '800m'
+        memory: 1Gi
+      requests:
+        cpu: '700m'
+        memory: 1Gi
+    #nodeSelector: 
+    #  ng: node3
+    tolerations: []
+    affinity: {}
+  catalog:
+    properties: 
+      mysql.properties: |
+        connector.name=mysql
+        connection-url=jdbc:mysql://mysql.my-sql:3306
+        connection-user=root
+        connection-password=root
+env: []
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+
+service:
+  type: NodePort
+  annotations: 
+    imageregistry: "https://hub.docker.com/"
+  ports: 
+    http: 8080
+    https: 8443
+  loadBalancerSourceRanges: []
+  
+ingress:
+  enabled: true
+  hosts: "trino-stg.test.com"
+  annotations:
+    imageregistry: "https://hub.docker.com/"
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'false'
+    service.alpha.kubernetes.io/app-protocols: '{"https":"HTTPS"}'
+  path: {}
