@@ -6,7 +6,7 @@ image:
   repository: trinodb/trino
   pullPolicy: Always
   # Overrides the image tag whose default is the chart version.
-  tag: 439
+  tag: 409
 #imagePullSecrets: 
 #  - name: registry-credentials
 
